@@ -805,9 +805,14 @@ figure { margin: 0; }
 .inline-ad__img img {
   display: block;
   margin: 0 auto;
+  /* Preserve the whole ad (no cropping), but scale proportionally to fit
+     within a comfortable height so a full-page portrait print ad doesn't
+     dominate the scroll. Browser picks the smaller of the two max-* to
+     satisfy both while keeping aspect ratio intact. */
   max-width: 100%;
+  max-height: 85vh;
   width: auto;
-  height: auto;   /* natural size — no crop */
+  height: auto;
 }
 .inline-ad__name {
   font-family: var(--ff-display);
