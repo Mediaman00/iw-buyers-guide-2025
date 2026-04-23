@@ -1513,7 +1513,11 @@ figure { margin: 0; }
 /* Inline figure — two variants.
 
    Default (editorial photograph, ≥ 800px natural width): breaks out of the
-   narrow body column to 100vw for an immersive full-bleed moment.
+   narrow body column to 100vw so the photo feels like a page turn, but
+   the image itself is capped at ~70vh tall and ~1100px wide so the reader
+   keeps a line or two of text visible above and below it. Losing the
+   surrounding text on every figure breaks the narrative; giving each
+   photo a generous-but-not-page-filling stage preserves reading context.
 
    --small (logos, signature rules, inline graphics): stays within the body
    column at its natural pixel dimensions so a 225×189 icon doesn't get
@@ -1522,8 +1526,16 @@ figure { margin: 0; }
   margin: clamp(32px, 5vw, 72px) calc(50% - 50vw);
   width: 100vw;
   max-width: 100vw;
+  display: flex;
+  justify-content: center;
 }
-.inline-figure img { width: 100%; height: auto; display: block; }
+.inline-figure img {
+  display: block;
+  max-width: min(1100px, 92vw);
+  max-height: 68vh;
+  width: auto;
+  height: auto;
+}
 
 .inline-figure--small {
   width: auto;
