@@ -599,16 +599,16 @@ figure { margin: 0; }
   font-variation-settings: "wdth" 115, "wght" 900;
   letter-spacing: -.03em;
   line-height: .95;
-  /* Sized to stay within the meta column at 1440w when the title contains a
-     long single word like "BOARDWALK". The old 6.2vw/104px was wider than
-     the meta column and spilled past the viewport edge. */
-  font-size: clamp(38px, 4.8vw, 76px);
+  /* Scale sized so every word (longest is "BOARDWALK") fits the meta
+     column at every viewport between 360px and 2000px+. With keep-all we
+     never break a word across characters — titles wrap between words
+     only, which is the editorial convention. */
+  font-size: clamp(32px, 4vw, 60px);
   text-transform: uppercase;
   margin: 0;
-  /* Safety nets: prefer word-boundary wrapping; if a single word is still
-     wider than the column, break at any character rather than overflow. */
-  overflow-wrap: anywhere;
-  hyphens: auto;
+  word-break: keep-all;
+  overflow-wrap: normal;
+  hyphens: manual;
 }
 .cover-story:hover .cover-story__title { color: var(--accent); }
 .cover-story__dek {
