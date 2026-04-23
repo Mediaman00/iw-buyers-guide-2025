@@ -135,13 +135,19 @@
 html {
   -webkit-text-size-adjust: 100%;
   scroll-behavior: smooth;
-  /* Clip any accidental horizontal overflow (e.g. an oversized display title
-     or a figure that bleeds past 100vw). Using `clip` instead of `hidden` so
-     sticky positioning on descendants still works. */
   overflow-x: clip;
+  /* Belt-and-braces: guarantee the root element spans the full viewport
+     width. Some browsers (esp. after a staticrypt document.write replace)
+     compute html width from child block flow rather than the viewport. */
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  background: var(--bg);
 }
 body {
   margin: 0;
+  padding: 0;
+  width: 100%;
   background: var(--bg);
   color: var(--fg);
   font-family: var(--ff-body);
@@ -759,77 +765,63 @@ figure { margin: 0; }
   .ad-teaser__strip { grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); }
 }
 
-/* — ARTICLE SPONSORS (inline break inside article-body flow) —
-   Uses the same 100vw break-out trick as .inline-figure so the module
-   always spans viewport edge-to-edge even though it sits inside the
-   narrow body column. Renders as a full-bleed intermission between
-   halves of the editorial copy, like a magazine ad page. */
-.article-sponsors {
-  margin: clamp(48px, 6vw, 96px) calc(50% - 50vw);
+/* — INLINE AD — single advertiser, threaded into the article body between
+   paragraphs. Each ad appears as a standalone full-bleed interruption in
+   the editorial flow, the way a print magazine places a display ad page
+   between editorial pages. Uses the same break-out trick as .inline-figure
+   because it sits inside the narrow .article-body column. */
+.inline-ad {
+  margin: clamp(32px, 5vw, 72px) calc(50% - 50vw);
   width: 100vw;
   max-width: 100vw;
-  padding: clamp(40px, 5vw, 72px) var(--pad-x);
+  padding: clamp(32px, 4vw, 64px) var(--pad-x);
   border-top: 1px solid var(--rule);
   border-bottom: 1px solid var(--rule);
   background: var(--bg-alt);
-  color: var(--fg);
 }
-.article-sponsors__head {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: var(--s-5);
-  margin-bottom: clamp(20px, 3vw, 32px);
-  flex-wrap: wrap;
+.inline-ad__link {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--s-3);
+  max-width: 720px;
+  margin: 0 auto;
+  color: inherit;
 }
-.article-sponsors__head h3 {
+.inline-ad__kicker {
+  font-family: var(--ff-mono);
+  font-size: var(--fs-xs);
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+.inline-ad__img {
+  background: var(--bg);
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  padding: clamp(12px, 1.5vw, 24px);
+  max-height: 60vh;
+  border: 1px solid var(--rule);
+}
+.inline-ad__img img {
+  max-width: 100%;
+  max-height: 60vh;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  display: block;
+}
+.inline-ad__name {
   font-family: var(--ff-display);
   font-weight: 700;
-  font-variation-settings: "wdth" 110, "wght" 700;
-  letter-spacing: -.02em;
+  font-variation-settings: "wdth" 112, "wght" 700;
+  letter-spacing: -.015em;
   line-height: 1;
-  font-size: var(--fs-h3);
+  font-size: clamp(22px, 2.2vw, 32px);
   text-transform: uppercase;
-  margin: 0;
+  transition: color var(--dur-1) var(--ease);
 }
-.article-sponsors__grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-  grid-auto-rows: 1fr;   /* tiles align to the tallest in the row so print ads of mixed aspects don't stair-step */
-  gap: var(--s-4);
-}
-.article-sponsors__grid[data-count="2"] { grid-template-columns: repeat(2, 1fr); max-width: 720px; }
-.article-sponsors__grid[data-count="3"] { grid-template-columns: repeat(3, 1fr); max-width: 960px; }
-.article-sponsors__grid[data-count="4"] { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); max-width: 1040px; }
-.sponsor-tile {
-  display: flex;
-  flex-direction: column;
-  gap: var(--s-3);
-  color: inherit;
-  padding: var(--s-4);
-  background: var(--bg);
-  border: 1px solid var(--rule);
-  transition: border-color var(--dur-1) var(--ease), transform var(--dur-2) var(--ease);
-}
-.sponsor-tile:hover { border-color: var(--accent); transform: translateY(-2px); }
-.sponsor-tile__img {
-  aspect-ratio: 4/5;
-  background: var(--bg);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-}
-.sponsor-tile__img img { max-width: 100%; max-height: 100%; width: auto; height: auto; object-fit: contain; }
-.sponsor-tile__name {
-  font-family: var(--ff-display);
-  font-weight: 600;
-  font-variation-settings: "wdth" 110, "wght" 600;
-  letter-spacing: -.01em;
-  line-height: 1.1;
-  font-size: var(--fs-sm);
-  text-transform: uppercase;
-}
+.inline-ad__link:hover .inline-ad__name { color: var(--accent); }
 
 /* — ADVERTISERS INDEX PAGE — */
 .advertisers-index {
@@ -1125,6 +1117,8 @@ figure { margin: 0; }
     [content-start] minmax(0, 1fr)
     [content-end] var(--pad-x) [full-end];
   row-gap: 0;
+  width: 100%;
+  margin: 0;
 }
 .article > * { grid-column: content; }
 .article > .bleed { grid-column: full; }
@@ -1541,29 +1535,33 @@ figure { margin: 0; }
   margin: 0 auto;
 }
 
-/* SPOTLIGHT callout — dark panel with two-column layout on wide viewports */
-.article-body .container-default {
+/* SPOTLIGHT — species fact panel extracted from the body and rendered as
+   a direct .article grid child. Dark panel with two-column layout on wider
+   viewports. No calc() bleed; grid-column: full handles the edge-to-edge. */
+.spotlight {
+  grid-column: full;
   background: var(--bg-ink);
   color: var(--fg-invert);
-  padding: clamp(24px, 3vw, 40px);
-  margin: 2.4em calc(50% - 50vw);
-  width: 100vw;
-  max-width: 100vw;
+  padding: clamp(28px, 4vw, 56px) var(--pad-x);
+  margin-block: clamp(32px, 5vw, 72px);
+  display: block;
 }
-.article-body .container-default .layoutitem-default {
+.spotlight .container-default {
   max-width: 80ch;
   margin: 0 auto;
+}
+.spotlight .layoutitem-default {
   column-count: 2;
   column-gap: 48px;
 }
-.article-body .container-default p {
+.spotlight p {
   color: var(--fg-invert);
   margin-bottom: .6em;
   break-inside: avoid;
   font-size: var(--fs-sm);
   line-height: 1.45;
 }
-.article-body .container-default strong { color: var(--accent-3); }
+.spotlight strong { color: var(--accent-3); }
 
 /* CTA inline (YouTube widget, etc.) */
 .cta {
