@@ -548,6 +548,81 @@ figure { margin: 0; }
 .lead-feature--flip .lead-feature__image { order: 2; }
 .lead-feature--flip .lead-feature__meta  { order: 1; }
 
+/* — COVER STORY (prestige placement on the home, one feature spotlighted)
+   Larger and more dramatic than a normal lead-feature: bigger image stage,
+   larger title, distinct Cover Story kicker. */
+.cover-story {
+  grid-column: full;
+  display: grid;
+  grid-template-columns: minmax(0, 1.7fr) minmax(320px, 1fr);
+  gap: clamp(32px, 4vw, 72px);
+  align-items: center;
+  padding: clamp(72px, 9vw, 140px) var(--pad-x);
+  color: inherit;
+  background: var(--bg);
+  border-bottom: 1px solid var(--rule);
+}
+.cover-story__image {
+  aspect-ratio: 3/2;
+  overflow: hidden;
+  background: var(--bg-alt);
+  position: relative;
+  max-height: clamp(420px, 56vw, 720px);
+  box-shadow: var(--shadow-lg);
+}
+.cover-story__image img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  object-position: center top;
+  transition: transform var(--dur-4) var(--ease);
+}
+.cover-story:hover .cover-story__image img { transform: scale(1.02); }
+.cover-story__meta { display: flex; flex-direction: column; gap: var(--s-5); align-self: center; }
+.cover-story__title {
+  font-family: var(--ff-display);
+  font-weight: 900;
+  font-variation-settings: "wdth" 115, "wght" 900;
+  letter-spacing: -.035em;
+  line-height: .92;
+  font-size: clamp(44px, 6.2vw, 104px);
+  text-transform: uppercase;
+  margin: 0;
+}
+.cover-story:hover .cover-story__title { color: var(--accent); }
+.cover-story__dek {
+  font-size: var(--fs-lead);
+  color: var(--fg-muted);
+  max-width: 40ch;
+  margin: 0;
+}
+.cover-story__link {
+  margin-top: var(--s-3);
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-3);
+  font-family: var(--ff-mono);
+  font-size: var(--fs-xs);
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  color: var(--accent);
+  border-top: 1px solid var(--accent);
+  padding-top: 10px;
+  align-self: flex-start;
+}
+.cover-story__link::after { content: "\2192"; }
+/* Aspect variants for the cover-story image container, mirroring
+   .lead-feature so portraits keep proportions too. */
+.cover-story--square .cover-story__image { aspect-ratio: 1/1; }
+.cover-story--tall .cover-story__image { aspect-ratio: 3/4; max-width: 520px; justify-self: end; width: 100%; }
+.cover-story--tall { grid-template-columns: minmax(0, 1fr) minmax(320px, 1.1fr); }
+@media (max-width: 860px) {
+  .cover-story {
+    grid-template-columns: 1fr;
+    padding: clamp(48px, 7vw, 80px) var(--pad-x);
+  }
+  .cover-story--tall .cover-story__image { justify-self: start; max-width: none; }
+}
+
 /* — FEATURE GRID (blog-index home) — */
 .feature-grid {
   grid-column: full;
@@ -672,12 +747,20 @@ figure { margin: 0; }
   .ad-teaser__strip { grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); }
 }
 
-/* — ARTICLE SPONSORS (inline on feature pages) — */
+/* — ARTICLE SPONSORS (inline break inside article-body flow) —
+   Uses the same 100vw break-out trick as .inline-figure so the module
+   always spans viewport edge-to-edge even though it sits inside the
+   narrow body column. Renders as a full-bleed intermission between
+   halves of the editorial copy, like a magazine ad page. */
 .article-sponsors {
-  grid-column: full;
+  margin: clamp(48px, 6vw, 96px) calc(50% - 50vw);
+  width: 100vw;
+  max-width: 100vw;
   padding: clamp(40px, 5vw, 72px) var(--pad-x);
   border-top: 1px solid var(--rule);
+  border-bottom: 1px solid var(--rule);
   background: var(--bg-alt);
+  color: var(--fg);
 }
 .article-sponsors__head {
   display: flex;
