@@ -210,8 +210,12 @@ figure { margin: 0; }
     [content-start] minmax(0, 1fr)
     [content-end] var(--pad-x) [full-end];
 }
-.page > * { grid-column: content; }
-.page > .bleed { grid-column: full; width: 100%; }
+/* NO catch-all. Every component inside .page sets its own grid-column
+   explicitly. A catch-all here (e.g. `.page > *`) has the same specificity
+   as the component rules and loses/wins on source order, which caused a
+   cascade bug where later catch-alls silently overrode earlier component
+   placements (e.g. the pager ending up in the content column instead of
+   spanning full). Explicit placement avoids the source-order trap. */
 
 /* Flow container for sections that want their own internal padding */
 .section {
@@ -766,24 +770,23 @@ figure { margin: 0; }
 }
 
 /* — INLINE AD — single advertiser, threaded into the article body between
-   paragraphs. Each ad appears as a standalone full-bleed interruption in
-   the editorial flow, the way a print magazine places a display ad page
-   between editorial pages. Uses the same break-out trick as .inline-figure
-   because it sits inside the narrow .article-body column. */
+   paragraphs. Each ad appears as its own editorial break, the way a print
+   magazine drops a display ad page between feature pages. No chrome
+   around the creative: no pale background, no border, no inner frame,
+   no height crop — the ad shows at its natural dimensions. */
 .inline-ad {
-  margin: clamp(32px, 5vw, 72px) calc(50% - 50vw);
+  margin: clamp(48px, 6vw, 96px) calc(50% - 50vw);
   width: 100vw;
   max-width: 100vw;
-  padding: clamp(32px, 4vw, 64px) var(--pad-x);
-  border-top: 1px solid var(--rule);
-  border-bottom: 1px solid var(--rule);
-  background: var(--bg-alt);
+  padding: 0 var(--pad-x);
+  background: transparent;
 }
 .inline-ad__link {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   gap: var(--s-3);
-  max-width: 720px;
+  max-width: 1100px;
   margin: 0 auto;
   color: inherit;
 }
@@ -793,23 +796,18 @@ figure { margin: 0; }
   letter-spacing: .2em;
   text-transform: uppercase;
   color: var(--accent);
+  align-self: flex-start;
 }
 .inline-ad__img {
-  background: var(--bg);
-  display: grid;
-  place-items: center;
-  overflow: hidden;
-  padding: clamp(12px, 1.5vw, 24px);
-  max-height: 60vh;
-  border: 1px solid var(--rule);
+  display: block;
+  width: 100%;
 }
 .inline-ad__img img {
-  max-width: 100%;
-  max-height: 60vh;
-  width: auto;
-  height: auto;
-  object-fit: contain;
   display: block;
+  margin: 0 auto;
+  max-width: 100%;
+  width: auto;
+  height: auto;   /* natural size — no crop */
 }
 .inline-ad__name {
   font-family: var(--ff-display);
@@ -817,9 +815,10 @@ figure { margin: 0; }
   font-variation-settings: "wdth" 112, "wght" 700;
   letter-spacing: -.015em;
   line-height: 1;
-  font-size: clamp(22px, 2.2vw, 32px);
+  font-size: clamp(20px, 2vw, 28px);
   text-transform: uppercase;
   transition: color var(--dur-1) var(--ease);
+  align-self: flex-start;
 }
 .inline-ad__link:hover .inline-ad__name { color: var(--accent); }
 
@@ -1120,8 +1119,9 @@ figure { margin: 0; }
   width: 100%;
   margin: 0;
 }
-.article > * { grid-column: content; }
-.article > .bleed { grid-column: full; }
+/* NO catch-all — see note on .page above. Every direct child of .article
+   sets its own grid-column (full for hero / spotlight / pager / related /
+   inline-ad-when-bled; content for article-body). */
 
 .article-hero {
   grid-column: full;
@@ -1328,7 +1328,7 @@ figure { margin: 0; }
     [content-start] minmax(0, 1fr)
     [content-end] var(--pad-x) [full-end];
 }
-.listing > * { grid-column: content; }
+/* See the cascade note on .page. No catch-all. */
 .listing__head {
   grid-column: full;
   padding: clamp(40px, 5vw, 80px) var(--pad-x) clamp(24px, 3vw, 40px);
