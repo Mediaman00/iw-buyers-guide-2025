@@ -1086,7 +1086,9 @@ body.search-open { overflow: hidden; }
   position: relative;
 }
 .feature-grid-card__image {
-  aspect-ratio: 3/2;
+  /* Squares are forgiving — portraits (headshots) keep more vertical
+     context and landscapes lose only the wings rather than the bottom. */
+  aspect-ratio: 1/1;
   overflow: hidden;
   background: var(--bg-alt);
 }
